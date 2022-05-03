@@ -18,4 +18,11 @@ public class Euler {
         // return new Particle(p.getMass(), newX, newY, newVx, newVy, p.getCharge());
         return p;
     }
+
+
+    // TODO: no me cierra matematicamente este calculo
+    public static Double getPreviousX_1D(Double x, Double v, Double f, Double m, double t) {
+        double newVx = v - (t * f)/m;
+        return x - (t * newVx) - ((t * t) * f)/(2 * m);
+    }
 }

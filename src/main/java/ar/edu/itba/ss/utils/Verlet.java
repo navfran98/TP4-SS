@@ -23,4 +23,15 @@ public class Verlet {
         // currentParticle.getCharge());
         return currentParticle;
     }
+
+
+    public static Pair<Double, Double> getNextPos1D(Double x, Double v, Double m, Double t, Double dt, Double f) {
+        // TODO: el siguiente codigo esta comentado porque no me cierra matematicamente el calculo de getPreviousX_1D()
+//        double prevX = Euler.getPreviousX_1D(x, v, f, m, t);
+//        double newX = 2 * x - prevX + (dt*dt * f / m);
+//        double newV = (newX - prevX)/(2*dt);
+        double newX = x + (dt*v) + (dt*dt*f/(2*m));
+        double newV = v + (dt*f/m);
+        return new Pair<>(newX, newV);
+    }
 }

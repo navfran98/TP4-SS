@@ -1,0 +1,7 @@
+.idea
+*.iml
+target
+*.xyz
+*.csv
+out
+*.ipynb
