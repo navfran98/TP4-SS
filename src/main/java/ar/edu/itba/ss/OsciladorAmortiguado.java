@@ -35,6 +35,7 @@ public class OsciladorAmortiguado {
             x = rta.first;
             v = rta.second;
             f = (-k * x) - (gamma * v);
+            System.out.println(x);
             OutputParser.writePythonCSV(f, x, v, t);
         }
 

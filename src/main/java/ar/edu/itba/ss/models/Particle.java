@@ -3,45 +3,39 @@ package ar.edu.itba.ss.models;
 public class Particle {
 
     // Varible
-    private final double mass;
-    private final double x;
-    private final double y;
-    private final double vx;
-    private final double vy;
-    private final double charge;
+    private final Double mass;
+    private final Double x;
+    private final Double y;
+    private final Double vx;
+    private final Double vy;
 
     // Constructor
-    public Particle(double mass, double x, double y, double vx, double vy, double charge) {
+    public Particle(Double mass, Double x, Double y, Double vx, Double vy) {
         this.mass = mass;
         this.x = x;
         this.y = y;
         this.vx = vx;
         this.vy = vy;
-        this.charge = charge;
     }
 
     // Getters
-    public double getMass() {
+    public Double getMass() {
         return mass;
     }
 
-    public double getX() {
+    public Double getX() {
         return x;
     }
 
-    public double getY() {
+    public Double getY() {
         return y;
     }
 
-    public double getVx() {
+    public Double getVx() {
         return vx;
     }
 
-    public double getVy() {
+    public Double getVy() {
         return vy;
-    }
-
-    public double getCharge() {
-        return charge;
     }
 }
