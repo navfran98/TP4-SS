@@ -8,6 +8,7 @@ public class Particle {
     private final Double y;
     private final Double vx;
     private final Double vy;
+    private Double charge;
 
     // Constructor
     public Particle(Double mass, Double x, Double y, Double vx, Double vy) {
@@ -16,6 +17,15 @@ public class Particle {
         this.y = y;
         this.vx = vx;
         this.vy = vy;
+    }
+
+    public Particle(Double mass, Double x, Double y, Double vx, Double vy, Double charge) {
+        this.mass = mass;
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.charge = charge;
     }
 
     // Getters
@@ -37,5 +47,9 @@ public class Particle {
 
     public Double getVy() {
         return vy;
+    }
+
+    public Double getCharge() {
+        return charge;
     }
 }

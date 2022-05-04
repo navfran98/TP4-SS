@@ -15,7 +15,7 @@ public class App {
     private static final Double A = 2.0;
 
     private static final Double r0 = 1.0;
-    private static final Double v0 = - gamma / (2*m);
+    private static final Double v0 = -A * gamma / (2*m);
 
     private static final Double dt = 0.01;
 
@@ -42,6 +42,9 @@ public class App {
             //imprimir cada tOutput
             OutputParser.writePythonCSV(calculateForce(p), p.getX(), p.getVx(), t);
         }
+
+        OutputParser.createCleanUniverseFile();
+        Universe u = new Universe();
     }
 
     public static double calculateForce(Particle p){
