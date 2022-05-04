@@ -1,12 +1,12 @@
 package ar.edu.itba.ss.utils;
 
-import ar.edu.itba.ss.App;
+import ar.edu.itba.ss.*;
 import ar.edu.itba.ss.models.*;
 
-public class Verlet {
+public class Verlet implements AlgorithmInterface{
 
-    public static Particle getNextValues(Particle currentParticle, Particle prevParticle, double dt) {
-        double currentForce = App.calculateForce(currentParticle);
+    public Particle getNextValues(Particle currentParticle, Particle prevParticle, double dt) {
+        double currentForce = OsciladorAmortiguado.calculateForce(currentParticle);
         if(prevParticle.getX() == null) {
             prevParticle = Euler.getValuesForFirstPreviousParticle(currentParticle, currentForce, dt);
         }

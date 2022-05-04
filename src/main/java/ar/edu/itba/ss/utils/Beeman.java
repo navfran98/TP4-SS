@@ -2,16 +2,16 @@ package ar.edu.itba.ss.utils;
 import ar.edu.itba.ss.*;
 import ar.edu.itba.ss.models.*;
 
-public class Beeman {
+public class Beeman implements AlgorithmInterface {
 
-    public static Particle getNextValues(Particle currentParticle, Particle prevParticle, double dt) {
+    public Particle getNextValues(Particle currentParticle, Particle prevParticle, double dt) {
 
-        double currentForce = App.calculateForce(currentParticle);
+        double currentForce = OsciladorAmortiguado.calculateForce(currentParticle);
         if(prevParticle.getX() == null) {
             prevParticle = Euler.getValuesForFirstPreviousParticle(currentParticle, currentForce, dt);
         }
         
-        double prevForce = App.calculateForce(prevParticle);
+        double prevForce = OsciladorAmortiguado.calculateForce(prevParticle);
 
         double currentAceleration = currentForce / currentParticle.getMass();
         double prevAceleration = prevForce / prevParticle.getMass();
@@ -23,7 +23,7 @@ public class Beeman {
         // double prevVy = currentPart.getVy() + ((3/2) * 0 * dt) - ((1/2) * 0 * dt);
         
         Particle auxParticle = new Particle(currentParticle.getMass(), newX, 0.0, predVx, 0.0);
-        double auxForce = App.calculateForce(auxParticle);
+        double auxForce = OsciladorAmortiguado.calculateForce(auxParticle);
         double auxAceleration = auxForce / auxParticle.getMass();
 
         double newVx = currentParticle.getVx() + (auxAceleration/3 + 5*currentAceleration/6 - prevAceleration/6) * dt ;

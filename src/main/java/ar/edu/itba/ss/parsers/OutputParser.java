@@ -16,7 +16,7 @@ public class OutputParser {
     private static final String filename = "OutputPython.csv";
     private static final String filenameUniverse = "OutputTP4.xyz";
 
-    public static void writePythonCSV(double f, double x, double v, double t) {
+    public static void writePythonCSV(double f, double x, double v, double t, String fn) {
         try {
             StringBuilder dump = new StringBuilder();
             if(first){
@@ -24,7 +24,7 @@ public class OutputParser {
                 first=false;
             }
             dump.append(t).append(",").append(x).append(",").append(v).append(",").append(f).append("\n");
-            appendToEndOfFile(filename, dump.toString());
+            appendToEndOfFile(fn, dump.toString());
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
@@ -71,8 +71,9 @@ public class OutputParser {
         }
     }
 
-    public static void createCleanPythonFile() {
-        Path fileToDeletePath = Paths.get(filename);
+    public static void createCleanPythonFile(String fn) {
+        Path fileToDeletePath = Paths.get(fn);
+        first = true;
         try {
             Files.deleteIfExists(fileToDeletePath);
         } catch (IOException e) {

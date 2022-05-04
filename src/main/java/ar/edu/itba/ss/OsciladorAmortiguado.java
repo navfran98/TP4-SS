@@ -1,11 +1,13 @@
 package ar.edu.itba.ss;
 
-import ar.edu.itba.ss.models.Pair;
-import ar.edu.itba.ss.parsers.OutputParser;
-import ar.edu.itba.ss.utils.Verlet;
+import ar.edu.itba.ss.models.*;
+import ar.edu.itba.ss.parsers.*;
+import ar.edu.itba.ss.utils.*;
 
 public class OsciladorAmortiguado {
 
+    // simulate(algorithm, currentPart, prevPart) aca va a ir evolucionando las posiciones, 
+    // llamando a una funcion de getNextPos y te devuelve una nueva particula
     private static final Double m = 70.0;
     private static final Double k = 10000.0;
     private static final Double gamma = 100.0;
@@ -18,26 +20,35 @@ public class OsciladorAmortiguado {
 
     private static final Double dt = 0.01;
 
+    // Cada cuanto generamos output.
+    private static final Double tOutput = 3*dt;
 
-    public static void main(String[] args) {
-
-        OutputParser.createCleanPythonFile();
-
-        double x = r0;
-        double v = v0;
-
-        // Paso en t=0
-        double f = (-k * x) - (gamma * v);
-        OutputParser.writePythonCSV(f, x, v, 0);
-
-        for (double t = 0.0 + dt; t <= tf; t += dt) {
-            Pair<Double, Double> rta = Verlet.getNextPos1D(x, v, m, t, dt, f);
-            x = rta.first;
-            v = rta.second;
-            f = (-k * x) - (gamma * v);
-            System.out.println(x);
-            OutputParser.writePythonCSV(f, x, v, t);
+    public static void simulate(AlgorithmInterface algorithm, String filename) {
+        
+        Particle p = new Particle(m, r0, 0.0, v0, 0.0);
+        Particle prevp = new Particle(m, null, null, null , null);
+        Particle aux = null;
+        OutputParser.createCleanPythonFile(filename);
+        
+        double auxt = 0;
+        for (double t = 0 ; t <= tf; t += dt, auxt += dt) {
+            // queremos calcular la siguiente posicion de p
+            aux = p;
+            p = algorithm.getNextValues(p, prevp, dt);
+            prevp = aux;
+            //imprimir cada tOutput
+            if(auxt == tOutput){
+                OutputParser.writePythonCSV(calculateForce(p), p.getX(), p.getVx(), t, filename);
+                auxt = 0;
+            }
         }
 
+        OutputParser.createCleanUniverseFile();
+        Universe u = new Universe();
     }
+
+    public static double calculateForce(Particle p){
+        return ((- k * p.getX()) - (gamma * p.getVx()));
+    }
+
 }
