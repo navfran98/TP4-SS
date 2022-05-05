@@ -8,6 +8,7 @@ public class App {
     private static final String verletFile = "OutputVerlet.csv";
     private static final String beemanFile = "OutputBeeman.csv";
     private static final String gpcFile = "OutputGPC.csv";
+    private static final String analyticFile = "OutputAnalyticSolution.csv";
     public static void main(String[] args) {
         Verlet v = new Verlet();
         Beeman b = new Beeman();
@@ -15,5 +16,6 @@ public class App {
         OsciladorAmortiguado.simulate(v,verletFile);
         OsciladorAmortiguado.simulate(b, beemanFile);
         OsciladorAmortiguado.simulate(gpc, gpcFile);
+        OsciladorAmortiguado.calculateAnalyticSolution(analyticFile);
     }
 }

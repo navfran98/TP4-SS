@@ -13,7 +13,6 @@ import java.util.List;
 public class OutputParser {
 
     private static boolean first = true;
-    private static final String filename = "OutputPython.csv";
     private static final String filenameUniverse = "OutputTP4.xyz";
 
     public static void writePythonCSV(double f, double x, double v, double t, String fn) {
@@ -24,6 +23,21 @@ public class OutputParser {
                 first=false;
             }
             dump.append(t).append(",").append(x).append(",").append(v).append(",").append(f).append("\n");
+            appendToEndOfFile(fn, dump.toString());
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    public static void writePythonAnalyticCSV(double t,double x, String fn) {
+        try {
+            StringBuilder dump = new StringBuilder();
+            if(first){
+                dump.append("T,X\n");
+                first=false;
+            }
+            dump.append(t).append(",").append(x).append("\n");
             appendToEndOfFile(fn, dump.toString());
         } catch (IOException e) {
             System.out.println("An error occurred.");
