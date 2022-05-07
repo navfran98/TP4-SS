@@ -1,5 +1,6 @@
 package ar.edu.itba.ss.parsers;
 
+import ar.edu.itba.ss.models.Force;
 import ar.edu.itba.ss.models.Particle;
 
 import java.io.BufferedWriter;
@@ -15,14 +16,14 @@ public class OutputParser {
     private static boolean first = true;
     private static final String filenameUniverse = "OutputTP4.xyz";
 
-    public static void writePythonCSV(double f, double x, double v, double t, String fn) {
+    public static void writePythonCSV(Force f, double x, double v, double t, String fn) {
         try {
             StringBuilder dump = new StringBuilder();
             if(first){
                 dump.append("T,X,V,F\n");
                 first=false;
             }
-            dump.append(t).append(",").append(x).append(",").append(v).append(",").append(f).append("\n");
+            dump.append(t).append(",").append(x).append(",").append(v).append(",").append(f.getX()).append("\n");
             appendToEndOfFile(fn, dump.toString());
         } catch (IOException e) {
             System.out.println("An error occurred.");
@@ -38,6 +39,21 @@ public class OutputParser {
                 first=false;
             }
             dump.append(t).append(",").append(x).append("\n");
+            appendToEndOfFile(fn, dump.toString());
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeElectricPythonCSV(Force f, double x, double y, double vx, double vy, double t, String fn) {
+        try {
+            StringBuilder dump = new StringBuilder();
+            if(first){
+                dump.append("T,X,Y,Vx,Vy,Fx,Fy\n");
+                first=false;
+            }
+            dump.append(t).append(",").append(x).append(",").append(y).append(",").append(vx).append(",").append(vy).append(",").append(f.getX()).append(",").append(f.getY()).append("\n");
             appendToEndOfFile(fn, dump.toString());
         } catch (IOException e) {
             System.out.println("An error occurred.");

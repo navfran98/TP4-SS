@@ -52,4 +52,8 @@ public class Particle {
     public Double getCharge() {
         return charge;
     }
+
+    public Double getDistance(Particle p2) {
+        return Math.sqrt((Math.pow(this.x - p2.getX(), 2) + Math.pow(this.y - p2.getY(), 2)));
+    }
 }

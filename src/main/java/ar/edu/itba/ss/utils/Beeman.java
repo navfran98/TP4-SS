@@ -4,30 +4,41 @@ import ar.edu.itba.ss.models.*;
 
 public class Beeman implements AlgorithmInterface {
 
-    public Particle getNextValues(Particle currentParticle, Particle prevParticle, double dt) {
-
-        double currentForce = OsciladorAmortiguado.calculateForce(currentParticle);
+    public Particle getNextValues(Particle currentParticle, Particle prevParticle, double dt, boolean electric) {
+        Force currentForce = getForce(electric, currentParticle);
+        System.out.println("FX: " + currentForce.getX() + " - FY: " + currentForce.getY());
         if(prevParticle.getX() == null) {
             prevParticle = Euler.getValuesForFirstPreviousParticle(currentParticle, currentForce, dt);
         }
+        Force prevForce = getForce(electric, prevParticle);
+        System.out.println("FX: " + prevForce.getX() + " - FY: " + prevForce.getY());
+        double currentAcelerationX = currentForce.getX() / currentParticle.getMass();
+        double currentAcelerationY = currentForce.getY() / currentParticle.getMass();
+        double prevAcelerationX = prevForce.getX() / prevParticle.getMass();
+        double prevAcelerationY = prevForce.getY() / prevParticle.getMass();
+
+        double newX = currentParticle.getX() + currentParticle.getVx() * dt + (2*currentAcelerationX/3 - prevAcelerationX/6) * (dt * dt);
+        double newY = currentParticle.getY() + currentParticle.getVy() * dt + (2*currentAcelerationY/3 - prevAcelerationY/6) * (dt * dt);
+
+        double predVx = currentParticle.getVx() + (3*currentAcelerationX/2 - prevAcelerationX/2 ) * dt;
+        double predVy = currentParticle.getVy() + (3*currentAcelerationY/2 - prevAcelerationY/2 ) * dt;
         
-        double prevForce = OsciladorAmortiguado.calculateForce(prevParticle);
+        Particle auxParticle = new Particle(currentParticle.getMass(), newX, newY, predVx, predVy, currentParticle.getCharge());
+        Force auxForce = getForce(electric, auxParticle);
+        double auxAcelerationX = auxForce.getX() / auxParticle.getMass();
+        double auxAcelerationY = auxForce.getY() / auxParticle.getMass();
 
-        double currentAceleration = currentForce / currentParticle.getMass();
-        double prevAceleration = prevForce / prevParticle.getMass();
+        double newVx = currentParticle.getVx() + (auxAcelerationX/3 + 5*currentAcelerationX/6 - prevAcelerationX/6) * dt ;
+        double newVy = currentParticle.getVx() + (auxAcelerationY/3 + 5*currentAcelerationY/6 - prevAcelerationY/6) * dt ;
+        return new Particle(currentParticle.getMass(), newX, newY, newVx, newVy, currentParticle.getCharge());
+    }
 
-        double newX = currentParticle.getX() + currentParticle.getVx() * dt + (2*currentAceleration/3 - prevAceleration/6) * (dt * dt);
-        // double newY = currentPart.getY() + currentPart.getVy() * dt + ((2/3) * 0 * (dt * dt)) - ((1/6) * 0 * (dt * dt));
-
-        double predVx = currentParticle.getVx() + (3*currentAceleration/2 - prevAceleration/2 ) * dt;
-        // double prevVy = currentPart.getVy() + ((3/2) * 0 * dt) - ((1/2) * 0 * dt);
-        
-        Particle auxParticle = new Particle(currentParticle.getMass(), newX, 0.0, predVx, 0.0);
-        double auxForce = OsciladorAmortiguado.calculateForce(auxParticle);
-        double auxAceleration = auxForce / auxParticle.getMass();
-
-        double newVx = currentParticle.getVx() + (auxAceleration/3 + 5*currentAceleration/6 - prevAceleration/6) * dt ;
-        // double newVy = prevVy + ((1/3) * 0 * dt) + ((5/6) * 0 * dt) - ((1/6) * 0 * dt);
-        return new Particle(currentParticle.getMass(), newX, 0.0, newVx, 0.0);
+    private Force getForce(boolean electric, Particle p){
+        Force force;
+        if(electric)
+            force = ElectricUniverse.calculateForce(p);
+        else
+            force = OsciladorAmortiguado.calculateForce(p);
+        return force;
     }
 }

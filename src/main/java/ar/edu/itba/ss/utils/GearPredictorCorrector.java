@@ -11,7 +11,7 @@ public class GearPredictorCorrector implements AlgorithmInterface{
     private static final Double k = 10000.0;
     private static final Double gamma = 100.0;
 
-    public Particle getNextValues(Particle currentParticle, Particle prevParticle, double dt) {
+    public Particle getNextValues(Particle currentParticle, Particle prevParticle, double dt, boolean electric) {
 
         // En base a la posicion inicial de la particula queremos ...
 
@@ -19,7 +19,7 @@ public class GearPredictorCorrector implements AlgorithmInterface{
         List<Double> predictions = predict(currentParticle, dt);
 
         // Con las variables predichas calcular la aceleracion ...
-        Particle nextP = new Particle(currentParticle.getMass(), predictions.get(0), 0.0, predictions.get(1), 0.0);
+        Particle nextP = new Particle(currentParticle.getMass(), predictions.get(0), 0.0, predictions.get(1), 0.0, currentParticle.getCharge());
 
         // Calculamos el deltaR2
         Double deltaR2 = evaluate(predictions, nextP, dt);
@@ -28,7 +28,7 @@ public class GearPredictorCorrector implements AlgorithmInterface{
         // Con lo anterior corregimos la posicion y la velocidad ...
         List<Double> corrections = correct(predictions, deltaR2, dt);
 
-        return new Particle(currentParticle.getMass(), corrections.get(0), 0.0, corrections.get(1), 0.0);
+        return new Particle(currentParticle.getMass(), corrections.get(0), 0.0, corrections.get(1), 0.0, currentParticle.getCharge());
     }
 
     private static List<Double> correct(List<Double> pred, Double deltaR2, Double dt) {

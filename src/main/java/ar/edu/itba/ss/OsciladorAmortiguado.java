@@ -18,15 +18,15 @@ public class OsciladorAmortiguado {
     private static final Double r0 = 1.0;
     private static final Double v0 = -A * gamma / (2*m);
 
-    private static final Double dt = 0.0025;
+    private static final Double dt = 0.01;
 
     // Cada cuanto generamos output.
     private static final Double tOutput = 5*dt;
 
     public static void simulate(AlgorithmInterface algorithm, String filename) {
         
-        Particle p = new Particle(m, r0, 0.0, v0, 0.0);
-        Particle prevp = new Particle(m, null, null, null , null);
+        Particle p = new Particle(m, r0, 0.0, v0, 0.0, null);
+        Particle prevp = new Particle(m, null, null, null , null, null);
         Particle aux = null;
         OutputParser.createCleanPythonFile(filename);
         OutputParser.writePythonCSV(calculateForce(p), p.getX(), p.getVx(), 0, filename);
@@ -34,7 +34,7 @@ public class OsciladorAmortiguado {
         for (double t = 0 ; t <= tf; t += dt, auxt += dt) {
             // queremos calcular la siguiente posicion de p
             aux = p;
-            p = algorithm.getNextValues(p, prevp, dt);
+            p = algorithm.getNextValues(p, prevp, dt, false);
             prevp = aux;
             //imprimir cada tOutput
             if(auxt == tOutput){
@@ -44,11 +44,11 @@ public class OsciladorAmortiguado {
         }
 
         OutputParser.createCleanUniverseFile();
-        Universe u = new Universe();
     }
 
-    public static double calculateForce(Particle p){
-        return ((- k * p.getX()) - (gamma * p.getVx()));
+    public static Force calculateForce(Particle p){
+        double forcex = ((- k * p.getX()) - (gamma * p.getVx()));
+        return new Force(forcex, 0.0);
     }
 
     public static void calculateAnalyticSolution(String filename){
