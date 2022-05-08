@@ -30,4 +30,12 @@ public class Force {
         this.x += x;
         this.y += y;
     }
+
+    @Override
+    public String toString() {
+        return "Force{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

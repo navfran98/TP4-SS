@@ -1,6 +1,5 @@
 package ar.edu.itba.ss.utils;
 
-import ar.edu.itba.ss.App;
 import ar.edu.itba.ss.models.*;
 
 public class Euler {
@@ -15,7 +14,7 @@ public class Euler {
     
         // 2. Calcular rx y rx usando las newvx y newvy -> newrx = rx - delta t * newvx - ((delta t)^2 * fuerza)/ (2*masa)
         double newX = p.getX() - dt * newVx - ((dt * dt) * force.getX())/(2 * p.getMass());
-        double newY = p.getX() - dt * newVx - ((dt * dt) * force.getY())/(2 * p.getMass());
+        double newY = p.getY() - dt * newVy - ((dt * dt) * force.getY())/(2 * p.getMass());
         return new Particle(p.getMass(), newX, newY, newVx, newVy, p.getCharge());
     }
 }

@@ -14,12 +14,12 @@ public class ElectricUniverse {
     private static final Double Q = 1e-19;
     private static final Double M = 1e-27;
     private static final Double D = 1e-8;
-    private static final Double L = 15 * D; //TODO: aca pusiste 15 pero no es 16?
+    private static final Double L = 15 * D;
     private static final Double Dcut = 0.01*D;
     private static final Double min_v0 = 5e3;
     private static final Double max_v0 = 5e4;
 
-    private static final Double dt = 0.00001;
+    private static final Double dt = 1e-16;
     private static final Double tf = 5.0;
     private static final Double tOutput = 5*dt;
 
@@ -57,11 +57,11 @@ public class ElectricUniverse {
         boolean shouldEnd = false;
         OutputParser.createCleanPythonFile(filename);
         OutputParser.writeElectricPythonCSV(calculateForce(p), p.getX(), p.getY(), p.getVx(), p.getVy(), 0, filename);
-        double auxt = 0;
-        for (double t = 0 ; t <= tf && !shouldEnd; t += dt, auxt += dt) {
+        double auxt = 0, i = 0;
+        for (double t = 0 ; t <= tf && !shouldEnd; t += dt, auxt += dt, i++) {
             // queremos calcular la siguiente posicion de p
-            System.out.println("x: " + p.getX());
-            System.out.println("y: " + p.getY());
+//            System.out.println("x: " + p.getX());
+//            System.out.println("y: " + p.getY());
             aux = p;
             p = algorithm.getNextValues(p, prevp, dt, true);
             prevp = aux;
@@ -72,6 +72,7 @@ public class ElectricUniverse {
 
             if(meetEndCondition(p)){
                 shouldEnd = true;
+                System.out.println("la simulacion termino en la iteracion N°" + i);
             }
         }
     }
@@ -79,8 +80,10 @@ public class ElectricUniverse {
     private static boolean meetEndCondition(Particle p){
         //check si se fue por un borde
         for(Particle p2 : particles){
-            if(p.getDistance(p2) < Dcut)
+            if(p.getDistance(p2) < Dcut) {
+                System.out.println("Choque contra una particula");
                 return true;
+            }
         }
         if(p.getX() < 0 || p.getX() > L+D || p.getY() < 0 || p.getY() > L){
             System.out.println("Me voy por borde");

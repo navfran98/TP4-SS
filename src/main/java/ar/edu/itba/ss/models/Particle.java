@@ -56,4 +56,14 @@ public class Particle {
     public Double getDistance(Particle p2) {
         return Math.sqrt((Math.pow(this.x - p2.getX(), 2) + Math.pow(this.y - p2.getY(), 2)));
     }
+
+    @Override
+    public String toString() {
+        return "Particle{" +
+                "x=" + x +
+                ", y=" + y +
+                ", vx=" + vx +
+                ", vy=" + vy +
+                '}';
+    }
 }
