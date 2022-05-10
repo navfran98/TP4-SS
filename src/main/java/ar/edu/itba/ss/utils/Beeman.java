@@ -6,12 +6,10 @@ public class Beeman implements AlgorithmInterface {
 
     public Particle getNextValues(Particle currentParticle, Particle prevParticle, double dt, boolean electric) {
         Force currentForce = getForce(electric, currentParticle);
-        System.out.println("FX: " + currentForce.getX() + " - FY: " + currentForce.getY());
         if(prevParticle.getX() == null) {
             prevParticle = Euler.getValuesForFirstPreviousParticle(currentParticle, currentForce, dt);
         }
         Force prevForce = getForce(electric, prevParticle);
-        System.out.println("FX: " + prevForce.getX() + " - FY: " + prevForce.getY());
         double currentAcelerationX = currentForce.getX() / currentParticle.getMass();
         double currentAcelerationY = currentForce.getY() / currentParticle.getMass();
         double prevAcelerationX = prevForce.getX() / prevParticle.getMass();
@@ -29,16 +27,14 @@ public class Beeman implements AlgorithmInterface {
         double auxAcelerationY = auxForce.getY() / auxParticle.getMass();
 
         double newVx = currentParticle.getVx() + (auxAcelerationX/3 + 5*currentAcelerationX/6 - prevAcelerationX/6) * dt ;
-        double newVy = currentParticle.getVx() + (auxAcelerationY/3 + 5*currentAcelerationY/6 - prevAcelerationY/6) * dt ;
+        double newVy = currentParticle.getVy() + (auxAcelerationY/3 + 5*currentAcelerationY/6 - prevAcelerationY/6) * dt ;
         return new Particle(currentParticle.getMass(), newX, newY, newVx, newVy, currentParticle.getCharge());
     }
 
     private Force getForce(boolean electric, Particle p){
-        Force force;
         if(electric)
-            force = ElectricUniverse.calculateForce(p);
+            return ElectricUniverse.calculateForce(p);
         else
-            force = OsciladorAmortiguado.calculateForce(p);
-        return force;
+            return OsciladorAmortiguado.calculateForce(p);
     }
 }

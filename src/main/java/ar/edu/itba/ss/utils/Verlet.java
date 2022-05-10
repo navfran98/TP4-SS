@@ -20,11 +20,9 @@ public class Verlet implements AlgorithmInterface{
     }
 
     private Force getForce(boolean electric, Particle p){
-        Force force;
         if(electric)
-            force = ElectricUniverse.calculateForce(p);
+            return ElectricUniverse.calculateForce(p);
         else
-            force = OsciladorAmortiguado.calculateForce(p);
-        return force;
+            return OsciladorAmortiguado.calculateForce(p);
     }
 }

@@ -61,11 +61,22 @@ public class OutputParser {
         }
     }
 
-    public static void writeUniverse(List<Particle> particles) {
+    public static void writeUniverse(Particle fp, List<Particle> particles) {
         try {
-            StringBuilder dump = new StringBuilder(particles.size() + "\n" + "Time=" + 0 + "\n");
+            int color;
+            StringBuilder dump = new StringBuilder(particles.size() + 1 + "\n" + "Time=" + 0 + "\n");
+            if(fp.getCharge() > 0) {
+                color = 200;
+            } else {
+                color = 0;
+            }
+            dump.append(color).append(" ");
+            dump.append(fp.getX()).append(" ")
+                    .append(fp.getY()).append(" ")
+                    .append(1e-8 / 10).append(" ")
+                    .append(fp.getVx()).append(" ")
+                    .append(fp.getVy()).append(" \n");
             for (Particle p : particles) {
-                int color;
                 if(p.getCharge() > 0) {
                     color = 200;
                 } else {
@@ -107,6 +118,21 @@ public class OutputParser {
         try {
             Files.deleteIfExists(fileToDeletePath);
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void OutputEj1(String fn, double t, double total_energy){
+        try {
+            StringBuilder dump = new StringBuilder();
+            if(first){
+                dump.append("T,E\n");
+                first=false;
+            }
+            dump.append(t).append(",").append(total_energy).append("\n");
+            appendToEndOfFile(fn, dump.toString());
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
             e.printStackTrace();
         }
     }
