@@ -136,4 +136,21 @@ public class OutputParser {
             e.printStackTrace();
         }
     }
+
+    public static void OutputEj2(String fn, double v, List<Double> trajectories, List<Integer> endTypes){
+        try {
+            StringBuilder dump = new StringBuilder();
+            if(first){
+                dump.append("V,Tra,End\n");
+                first=false;
+            }
+            for (int i = 0; i < trajectories.size(); i++) {
+                dump.append(v).append(",").append(trajectories.get(i)).append(",").append(endTypes.get(i)).append("\n");
+            }
+            appendToEndOfFile(fn, dump.toString());
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
 }

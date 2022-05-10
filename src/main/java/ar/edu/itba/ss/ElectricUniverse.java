@@ -1,6 +1,7 @@
 package ar.edu.itba.ss;
 
 import ar.edu.itba.ss.models.Force;
+import ar.edu.itba.ss.models.Pair;
 import ar.edu.itba.ss.models.Particle;
 import ar.edu.itba.ss.parsers.OutputParser;
 import ar.edu.itba.ss.utils.AlgorithmInterface;
@@ -19,23 +20,10 @@ public class ElectricUniverse {
     private static final Double min_v0 = 5e3;
     private static final Double max_v0 = 5e4;
 
-    private static final Double dt = 1e-16;
     private static final Double tf = 5.0;
-    private static final Double tOutput = 20*dt;
 
-    // private static final Double pos1 = 15/2 * D + D/2;
-    // private static final Double pos2 = L/2;
-    // private static final Double pos3 = 15/2 * D - D/2;
-    // private static final Double pos4 = (pos1 + pos2)/2;
-    // private static final Double pos5 = (pos3 + pos2)/2;
-
-    private static Particle first_particle = new Particle(M, 0.0, randomY(), randomVx(), 0.0, Q);
+    private static Particle first_particle = new Particle(M, 0.0, randomY(), max_v0, 0.0, Q);
     private static final List<Particle> particles = populate();
-
-    // 2.1) Para el mayor valor de V0 y 5 posiciones iniciales fijas en el rango especificado, simular el sistema usando varios dt con alguno de los integradores implementados en 1). Promediar para las 5
-    // partículas, la evolución de la energía total del sistema (ET = cinética + potencial) y compararla para
-    //los distintos dt elegidos. Para esto considerar el promedio sobre todos los dt de las diferencias relativas: |ET(t=0)-ET(ti>0)| / ET(t=0). De ser necesario usar escala logarítmica para mostrar los detalles
-    // de la diferenci a ¿Cuál es el mejor dt para este sistema? ¿Cuál fue el criterio utilizado?
 
     
     private static List<Particle> populate() {
@@ -63,27 +51,29 @@ public class ElectricUniverse {
     }
 
     //siento q el simulate deberia recibir el tiempo final y el dt desde el app.java
-    public void simulate(AlgorithmInterface algorithm, String filename){
-        Particle p = first_particle;
+    public double simulate(AlgorithmInterface algorithm, String filename, double dt, double tOutput, double posY){
+        Particle p = new Particle(M, 0.0, posY, max_v0, 0.0, Q);;
         Particle prevp = new Particle(M, null, null, null , null, null);
         Particle aux = null;
-        OutputParser.createCleanPythonFile(filename);
-        // String ej1String = "Output_Pos1_dt1.csv";
-        // OutputParser.createCleanPythonFile(ej1String);
+        // double total_energy = getKineticEnergy(p) + getPotencialEnergy(p);
+        // OutputParser.createCleanPythonFile(filename);
+        // OutputParser.OutputEj1(filename, 0, total_energy);
         // OutputParser.writeElectricPythonCSV(calculateForce(p), p.getX(), p.getY(), p.getVx(), p.getVy(), 0, filename);
         boolean shouldEnd = false;
         double auxt = 0, i = 0;
+        double trajectory = 0;
         for (double t = 0 ; t <= tf && !shouldEnd; t += dt, auxt += dt, i++) {
-            // queremos calcular la siguiente posicion de p
             aux = p;
             p = algorithm.getNextValues(p, prevp, dt, true);
             prevp = aux;
-            OutputParser.writeUniverse(p, particles);
+            
+            trajectory += aux.getDistance(p);
+            // OutputParser.writeUniverse(p, particles);
             if(auxt == tOutput){
-                double total_energy = getKineticEnergy(p) + getPotencialEnergy(p);
-                // OutputParser.OutputEj1(ej1String, t, total_energy);
+                // total_energy = getKineticEnergy(p) + getPotencialEnergy(p);
+                // OutputParser.OutputEj1(filename, t, total_energy);
                 // OutputParser.writeElectricPythonCSV(calculateForce(p), p.getX(), p.getY(), p.getVx(), p.getVy(), t, filename);
-                auxt = 0;
+                // auxt = 0;
             }
 
             if(meetEndCondition(p)){
@@ -91,6 +81,54 @@ public class ElectricUniverse {
                 System.out.println("la simulacion termino en la iteracion N°" + i);
             }
         }
+        return trajectory;
+    }
+
+    public Pair<Double, Integer> simulateEj2(AlgorithmInterface algorithm, double dt, double posY, double vx){
+        Particle p = new Particle(M, 0.0, posY, vx, 0.0, Q);;
+        Particle prevp = new Particle(M, null, null, null , null, null);
+        Particle aux = null;
+        boolean shouldEnd = false;
+        double trajectory = 0;
+        Integer end = 0;
+        for (double t = 0 ; t <= tf && !shouldEnd; t += dt) {
+            aux = p;
+            p = algorithm.getNextValues(p, prevp, dt, true);
+            prevp = aux;          
+            trajectory += aux.getDistance(p);
+
+            end = endLocation(p);
+            if(end >= 0){
+                shouldEnd = true;
+            }
+        }
+        return new Pair<Double,Integer>(trajectory, end);
+    }
+
+    private static int endLocation(Particle p){
+        //check si se fue por un borde
+        for(Particle p2 : particles){
+            if(p.getDistance(p2) < Dcut) {
+                System.out.println("Absorbido");
+                return 0;
+            }
+        }
+        if(p.getX() < 0){
+            System.out.println("Izq");
+            return 1; //pared izq
+        }
+        else if(p.getX() > L+D){
+            System.out.println("Der");
+            return 2; //pared derecha
+        }
+        else if (p.getY() < 0){
+            System.out.println("Abajo");
+            return 3;   //pared abajo
+        }else if (p.getY() > L){
+            System.out.println("Arriba");
+            return 4;   //pared arriba
+        }else
+            return -1;
     }
 
     private static boolean meetEndCondition(Particle p){
@@ -142,14 +180,14 @@ public class ElectricUniverse {
         return 0.5 * p.getMass() * v * v;
     }
     
-    private static Double randomY() {
+    public static Double randomY() {
         double min_y = 15/2.0 * D - D;
         double max_y = 15/2.0 * D + D;
         double y = Math.random() * (max_y - min_y) + min_y;
         return y;
     }
 
-    private static Double randomVx() {
+    public static Double randomVx() {
         double vx = Math.random() * (max_v0 - min_v0) + min_v0;
         return vx;
     }

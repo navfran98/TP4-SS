@@ -23,6 +23,8 @@ public class OsciladorAmortiguado {
     // Cada cuanto generamos output.
     private static final Double tOutput = 5*dt;
 
+    //TODO: verificar si hauy q usar tOutput para el sistema 1
+
     public static void simulate(AlgorithmInterface algorithm, String filename) {
         
         Particle p = new Particle(m, r0, 0.0, v0, 0.0, null);
