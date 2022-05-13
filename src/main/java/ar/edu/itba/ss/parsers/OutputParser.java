@@ -14,6 +14,7 @@ import java.util.List;
 public class OutputParser {
 
     private static boolean first = true;
+    private static boolean first_trajectory = true;
     private static final String filenameUniverse = "OutputTP4.xyz";
 
     public static void writePythonCSV(Force f, double x, double v, double t, String fn) {
@@ -61,7 +62,7 @@ public class OutputParser {
         }
     }
 
-    public static void writeUniverse(Particle fp, List<Particle> particles) {
+    public static void writeUniverse(String fn, Particle fp, List<Particle> particles) {
         try {
             int color;
             StringBuilder dump = new StringBuilder(particles.size() + 1 + "\n" + "Time=" + 0 + "\n");
@@ -89,7 +90,7 @@ public class OutputParser {
                         .append(p.getVx()).append(" ")
                         .append(p.getVy()).append(" \n");
             }
-            appendToEndOfFile(filenameUniverse,dump.toString());
+            appendToEndOfFile(fn,dump.toString());
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
@@ -103,8 +104,8 @@ public class OutputParser {
         bw.close();
     }
 
-    public static void createCleanUniverseFile() {
-        Path fileToDeletePath = Paths.get(filenameUniverse);
+    public static void createCleanUniverseFile(String fn) {
+        Path fileToDeletePath = Paths.get(fn);
         try {
             Files.deleteIfExists(fileToDeletePath);
         } catch (IOException e) {
@@ -115,6 +116,16 @@ public class OutputParser {
     public static void createCleanPythonFile(String fn) {
         Path fileToDeletePath = Paths.get(fn);
         first = true;
+        try {
+            Files.deleteIfExists(fileToDeletePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void createCleanPythonTrajectoryFIle(String fn) {
+        Path fileToDeletePath = Paths.get(fn);
+        first_trajectory = true;
         try {
             Files.deleteIfExists(fileToDeletePath);
         } catch (IOException e) {
@@ -147,6 +158,21 @@ public class OutputParser {
             for (int i = 0; i < trajectories.size(); i++) {
                 dump.append(v).append(",").append(trajectories.get(i)).append(",").append(endTypes.get(i)).append("\n");
             }
+            appendToEndOfFile(fn, dump.toString());
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    public static void parseTrajectory(String fn, double x, double y){
+        try {
+            StringBuilder dump = new StringBuilder();
+            if(first_trajectory){
+                dump.append("X,Y\n");
+                first_trajectory=false;
+            }
+            dump.append(x).append(",").append(y).append("\n");
             appendToEndOfFile(fn, dump.toString());
         } catch (IOException e) {
             System.out.println("An error occurred.");

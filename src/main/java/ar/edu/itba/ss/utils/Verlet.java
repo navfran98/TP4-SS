@@ -8,7 +8,7 @@ public class Verlet implements AlgorithmInterface{
     public Particle getNextValues(Particle currentParticle, Particle prevParticle, double dt, boolean electric) {
         Force currentForce = getForce(electric, currentParticle);
         if(prevParticle.getX() == null) {
-            prevParticle = Euler.getValuesForFirstPreviousParticle(currentParticle, currentForce, dt);
+            prevParticle = Euler.getValuesForFirstPreviousParticle(currentParticle, currentForce, -dt);
         }
         double newX = 2 * currentParticle.getX() - prevParticle.getX() + ((dt * dt)/currentParticle.getMass()) * currentForce.getX();
         double newY = 2 * currentParticle.getY() - prevParticle.getY() + ((dt * dt)/currentParticle.getMass()) * currentForce.getY();

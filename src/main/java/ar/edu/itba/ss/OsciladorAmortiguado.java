@@ -6,58 +6,45 @@ import ar.edu.itba.ss.utils.*;
 
 public class OsciladorAmortiguado {
 
-    // simulate(algorithm, currentPart, prevPart) aca va a ir evolucionando las posiciones, 
-    // llamando a una funcion de getNextPos y te devuelve una nueva particula
-    private static final Double m = 70.0;
-    private static final Double k = 10000.0;
-    private static final Double gamma = 100.0;
-    private static final Double tf = 5.0;
+    private static final double m = 70.0;
+    private static final double k = 10000.0;
+    private static final double gamma = 100.0;
+    private static final double tf = 5.0;
 
-    private static final Double A = 2.0;
+    private static final double r0 = 1.0;
+    private static final double v0 =  - gamma / (2*m);
 
-    private static final Double r0 = 1.0;
-    private static final Double v0 = -A * gamma / (2*m);
-
-    private static final Double dt = 0.01;
-
-    // Cada cuanto generamos output.
-    private static final Double tOutput = 5*dt;
-
-    //TODO: verificar si hauy q usar tOutput para el sistema 1
-
-    public static void simulate(AlgorithmInterface algorithm, String filename) {
+    public static void simulate(AlgorithmInterface algorithm, String filename, double dt) {
         
         Particle p = new Particle(m, r0, 0.0, v0, 0.0, null);
         Particle prevp = new Particle(m, null, null, null , null, null);
         Particle aux = null;
         OutputParser.createCleanPythonFile(filename);
         OutputParser.writePythonCSV(calculateForce(p), p.getX(), p.getVx(), 0, filename);
+        double tOutput = 4 * dt;
         double auxt = 0;
         for (double t = 0 ; t <= tf; t += dt, auxt += dt) {
-            // queremos calcular la siguiente posicion de p
             aux = p;
             p = algorithm.getNextValues(p, prevp, dt, false);
             prevp = aux;
-            //imprimir cada tOutput
+            // OutputParser.writePythonCSV(calculateForce(p), p.getX(), p.getVx(), t, filename);
             if(auxt == tOutput){
                 OutputParser.writePythonCSV(calculateForce(p), p.getX(), p.getVx(), t, filename);
                 auxt = 0;
             }
         }
-
-        OutputParser.createCleanUniverseFile();
     }
 
     public static Force calculateForce(Particle p){
-        double forcex = ((- k * p.getX()) - (gamma * p.getVx()));
+        double forcex = ((- k) * p.getX() - gamma * p.getVx());
         return new Force(forcex, 0.0);
     }
 
-    public static void calculateAnalyticSolution(String filename){
+    public static void calculateAnalyticSolution(String filename, double dt){
         Particle particle = new Particle(m, r0, 0.0, v0, 0.0);
         OutputParser.createCleanPythonFile(filename);
         OutputParser.writePythonAnalyticCSV(0, particle.getX(), filename);
-
+        double tOutput = 4 * dt;
         double auxt = 0;
         for (double t = 0 ; t <= tf; t += dt, auxt += dt) {
             double r = Math.exp(-(gamma/(2 * m)) * t) * (Math.cos(Math.pow((k/m) - ((gamma * gamma)/(4 * m * m)), 0.5)*t));
@@ -67,7 +54,5 @@ public class OsciladorAmortiguado {
                 auxt = 0;
             }
         }
-
     }
-
 }

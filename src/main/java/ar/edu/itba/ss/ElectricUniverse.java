@@ -46,34 +46,33 @@ public class ElectricUniverse {
             on = !on;
         }
 
-        OutputParser.writeUniverse(first_particle, particles);
+        OutputParser.writeUniverse("OutputTP4.xyz",first_particle, particles);
         return particles;
     }
 
-    //siento q el simulate deberia recibir el tiempo final y el dt desde el app.java
-    public double simulate(AlgorithmInterface algorithm, String filename, double dt, double tOutput, double posY){
+    public void simulate(AlgorithmInterface algorithm, String filename, double dt, double tOutput, double posY){
         Particle p = new Particle(M, 0.0, posY, max_v0, 0.0, Q);;
         Particle prevp = new Particle(M, null, null, null , null, null);
         Particle aux = null;
-        // double total_energy = getKineticEnergy(p) + getPotencialEnergy(p);
-        // OutputParser.createCleanPythonFile(filename);
-        // OutputParser.OutputEj1(filename, 0, total_energy);
+        double total_energy = getKineticEnergy(p) + getPotencialEnergy(p);
+        OutputParser.createCleanPythonFile(filename);
+        OutputParser.OutputEj1(filename, 0, total_energy);
         // OutputParser.writeElectricPythonCSV(calculateForce(p), p.getX(), p.getY(), p.getVx(), p.getVy(), 0, filename);
         boolean shouldEnd = false;
-        double auxt = 0, i = 0;
-        double trajectory = 0;
+        int i = 0;
+        double auxt = 0;
         for (double t = 0 ; t <= tf && !shouldEnd; t += dt, auxt += dt, i++) {
             aux = p;
             p = algorithm.getNextValues(p, prevp, dt, true);
             prevp = aux;
-            
-            trajectory += aux.getDistance(p);
+            // total_energy = getKineticEnergy(p) + getPotencialEnergy(p);
+            // OutputParser.OutputEj1(filename, t, total_energy);
             // OutputParser.writeUniverse(p, particles);
             if(auxt == tOutput){
-                // total_energy = getKineticEnergy(p) + getPotencialEnergy(p);
-                // OutputParser.OutputEj1(filename, t, total_energy);
+                total_energy = getKineticEnergy(p) + getPotencialEnergy(p);
+                OutputParser.OutputEj1(filename, t, total_energy);
                 // OutputParser.writeElectricPythonCSV(calculateForce(p), p.getX(), p.getY(), p.getVx(), p.getVy(), t, filename);
-                // auxt = 0;
+                auxt = 0;
             }
 
             if(meetEndCondition(p)){
@@ -81,21 +80,35 @@ public class ElectricUniverse {
                 System.out.println("la simulacion termino en la iteracion N°" + i);
             }
         }
-        return trajectory;
     }
 
-    public Pair<Double, Integer> simulateEj2(AlgorithmInterface algorithm, double dt, double posY, double vx){
+    public Pair<Double, Integer> simulateEj2(AlgorithmInterface algorithm, double dt, double posY, double vx, String fn, boolean parse, String xyz){
         Particle p = new Particle(M, 0.0, posY, vx, 0.0, Q);;
         Particle prevp = new Particle(M, null, null, null , null, null);
         Particle aux = null;
         boolean shouldEnd = false;
         double trajectory = 0;
         Integer end = 0;
-        for (double t = 0 ; t <= tf && !shouldEnd; t += dt) {
+        int auxt = 0;
+        double tOutput = 2 * dt;
+        if(parse) {
+            // OutputParser.createCleanPythonTrajectoryFIle(fn);
+            // OutputParser.parseTrajectory(fn, p.getX(), p.getY());
+            // OutputParser.createCleanUniverseFile(xyz);
+            // OutputParser.writeUniverse(xyz, p, particles);
+        }
+        for (int t = 0 ; t <= tf/dt && !shouldEnd; t++, auxt++) {
             aux = p;
             p = algorithm.getNextValues(p, prevp, dt, true);
             prevp = aux;          
             trajectory += aux.getDistance(p);
+            // if(parse)
+            //     OutputParser.writeUniverse(xyz, p, particles);
+            // if(auxt * dt == tOutput){
+            //     if(parse)
+            //         OutputParser.parseTrajectory(fn, p.getX(), p.getY());
+            //     auxt = 0;
+            // }
 
             end = endLocation(p);
             if(end >= 0){
